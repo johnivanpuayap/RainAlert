@@ -2,15 +2,22 @@ import requests
 import os
 from twilio.rest import Client
 
-API_KEY = os.environ['OPENWEATHER_API_KEY']
+# DATA
 MY_LATITUDE = 12.385330
 MY_LONGITUDE = 124.330513
-TRIAL_NUMBER = +14706135180
+MY_PHONE_NUMBER = '+639561886073'
+
+
+# LOAD API KEYS
+OPENWEATHER_API_KEY = os.environ['OPENWEATHER_API_KEY']
+TWILIO_ACCOUNT_SID = os.environ['TWILIO_ACCOUNT_SID']
+TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
+TWILIO_PHONE_NUMBER = '+14706135180'
 
 parameters = {
     'lat': MY_LATITUDE,
     'lon': MY_LONGITUDE,
-    'appid': API_KEY,
+    'appid': OPENWEATHER_API_KEY,
 }
 
 response = requests.get(url='https://api.openweathermap.org/data/2.5/forecast', params=parameters)
@@ -23,7 +30,13 @@ for data in weather_data:
         will_rain = True
         break
 
-if will_rain:
+client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
+if will_rain:
     # Send an SMS
-    print('Bring an umbrella')
+    message = client.messages.create(
+        body="It's going to rain today. Remember to bring an umbrella!",
+        from_=TWILIO_PHONE_NUMBER,
+        to=MY_PHONE_NUMBER
+    )
+    print(message.sid)
