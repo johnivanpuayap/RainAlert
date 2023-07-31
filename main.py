@@ -1,8 +1,11 @@
 import requests
+import os
+from twilio.rest import Client
 
-API_KEY = '7065e713804868f06fb225df71e10c6c'
+API_KEY = os.environ['OPENWEATHER_API_KEY']
 MY_LATITUDE = 12.385330
 MY_LONGITUDE = 124.330513
+TRIAL_NUMBER = +14706135180
 
 parameters = {
     'lat': MY_LATITUDE,
@@ -14,10 +17,13 @@ response = requests.get(url='https://api.openweathermap.org/data/2.5/forecast', 
 response.raise_for_status()
 weather_data = response.json()['list'][0:6]
 
+# Check the Weather
 for data in weather_data:
     if data['weather'][0]['id'] < 700:
-        is_raining = True
+        will_rain = True
         break
 
-if is_raining:
+if will_rain:
+
+    # Send an SMS
     print('Bring an umbrella')
